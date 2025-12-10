@@ -2,9 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"Feast-Serve/menu"
 )
@@ -26,6 +26,10 @@ func main() {
 	http.Handle("/", http.FileServer(http.Dir("./frontend")))
 	http.HandleFunc("/generate-menu", generateMenuHandler)
 
-	fmt.Println("Server running at http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // Used only when running locally
+	}
+	log.Fatal(http.ListenAndServe(":"+port, nil))
+
 }
