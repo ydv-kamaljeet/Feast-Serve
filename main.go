@@ -10,6 +10,15 @@ import (
 )
 
 func generateMenuHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	// For preflight OPTIONS request
+	if r.Method == http.MethodOptions {
+		return
+	}
+
 	items, err := menu.LoadMenuFromJSON("./data/master_menu.json")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

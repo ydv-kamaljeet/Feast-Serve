@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Meal Planner</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background-color: #fdf6e4;
+        color: #4a2c2a;
+    }
+
+    header {
+        background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80');
+        background-size: cover;
+        background-position: center;
+        padding: 80px 20px;
+        text-align: center;
+        color: white;
+    }
+
+    header h1 {
+        font-size: 42px;
+        font-family: 'Playfair Display', serif;
+        text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        margin-bottom: 10px;
+    }
+
+    header p {
+        font-size: 18px;
+        font-weight: 300;
+        margin: 0;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    button {
+        background-color: #d35400;
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        font-size: 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background-color: #e67e22;
+    }
+
+    .loading {
+        font-size: 20px;
+        margin-top: 20px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .day-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .day-title {
+        font-size: 26px;
+        font-weight: bold;
+        color: #d35400;
+        margin-bottom: 15px;
+        font-family: 'Playfair Display', serif;
+    }
+
+    .combo {
+        background: #fff9f2;
+        padding: 15px;
+        border-left: 6px solid #d35400;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    .combo p {
+        margin: 4px 0;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🍽️ Your Personal AI Chef — Serving Smart Meals for 7 Days</h1>
+    <p>Freshly generated meal combos crafted with taste, balance, and variety.</p>
+</header>
+
+<div class="container">
+    <button onclick="generateMenu()" >Generate Weekly Menu 🍔</button>
+    <div id="loading" class="loading"></div>
+    <div id="output"></div>
+</div>
+
+<script>
+async function generateMenu() {
+    const output = document.getElementById("output");
+    const loading = document.getElementById("loading");
+
+    output.innerHTML = "";
+    loading.innerHTML = "⏳ Cooking up your custom menu…";
+
+    try {
+        const res = await fetch("https://feast-serve.onrender.com/generate-menu");
+        const data = await res.json();
+        loading.innerHTML = "";
+
+        data.menu_plan.forEach(day => {
+            const dayDiv = document.createElement("div");
+            dayDiv.className = "day-card";
+
+            let combosHTML = "";
+            day.combos.forEach(combo => {
+                combosHTML += `
+                    <div class="combo">
+                        <p><strong>Main:</strong> ${combo.main}</p>
+                        <p><strong>Side:</strong> ${combo.side}</p>
+                        <p><strong>Drink:</strong> ${combo.drink}</p>
+                        <p><strong>Calories:</strong> ${combo.calorie_count}</p>
+                        <p><small>${combo.reasoning}</small></p>
+                    </div>
+                `;
+            });
+
+            dayDiv.innerHTML = `
+                <div class="day-title">${day.day}</div>
+                ${combosHTML}
+            `;
+
+            output.appendChild(dayDiv);
+        });
+
+    } catch (error) {
+        loading.innerHTML = "⚠️ Failed to generate menu. Try again later.";
+    }
+}
+</script>
+
+</body>
+</html>
